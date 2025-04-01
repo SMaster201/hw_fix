@@ -1,0 +1,50 @@
+# 强制 HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 安全头部
+<IfModule mod_headers.c>
+    # 启用 HSTS
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    
+    # 防止点击劫持
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # 防止 MIME 类型嗅探
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # 启用 XSS 过滤器
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # 引用策略
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # 内容安全策略
+    Header always set Content-Security-Policy "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data:; font-src 'self' https: data:;"
+</IfModule>
+
+# 缓存控制
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>
+
+# 压缩
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule> 
